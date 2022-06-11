@@ -16,6 +16,7 @@ class RegisterApp extends StatefulWidget {
 
 class _RegisterAppState extends State<RegisterApp> {
   bool isLoading = false;
+  final _formKey = GlobalKey<FormState>();
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _mobileController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
@@ -30,53 +31,92 @@ class _RegisterAppState extends State<RegisterApp> {
             appBar: AppBar(
               title: Text(GlobalConstants().register),
             ),
-            body: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    commonTextField(GlobalConstants().name, Icons.verified_user,
-                        false, _nameController),
-                    const SizedBox(height: 10),
-                    commonTextField(GlobalConstants().mobile, Icons.phone,
-                        false, _mobileController),
-                    const SizedBox(height: 10),
-                    commonTextField(GlobalConstants().email, Icons.email, false,
-                        _emailController),
-                    const SizedBox(height: 10),
-                    commonTextField(GlobalConstants().password, Icons.password,
-                        true, _passwordController),
-                    const SizedBox(height: 10),
-                    commonButton(context, GlobalConstants().register, () {
-                      print(_nameController.text);
-                      print(_mobileController.text);
-                      isLoading = true;
-                      try {
-                        FirebaseAuth.instance
-                            .createUserWithEmailAndPassword(
-                                email: _emailController.text,
-                                password: _passwordController.text)
-                            .then((value) {
-                          FirebaseFirestore.instance
-                              .collection('regUserInfo')
-                              .doc(value.user!.uid)
-                              .set({
-                            "email": value.user!.email,
-                            "name": _nameController.text,
-                            "phone": _mobileController.text,
-                            "photo": value.user!.photoURL,
+            body: Form(
+              key: _formKey,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      commonTextField(GlobalConstants().name,
+                          Icons.verified_user, false, _nameController, (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter Name';
+                        } else if (value.length < 2) {
+                          return 'Length of name should be minimum 3';
+                        }
+                        return null;
+                      }),
+                      const SizedBox(height: 10),
+                      commonTextField(GlobalConstants().mobile, Icons.phone,
+                          false, _mobileController, (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter correct mobile no.';
+                        } else if (value.length < 9) {
+                          return 'Phone no. should be 10 digits';
+                        }
+                        return null;
+                      }),
+                      const SizedBox(height: 10),
+                      commonTextField(GlobalConstants().email, Icons.email,
+                          false, _emailController, (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter correct Email';
+                        }
+                        return null;
+                      }),
+                      const SizedBox(height: 10),
+                      commonTextField(
+                        GlobalConstants().password,
+                        Icons.password,
+                        true,
+                        _passwordController,
+                        (value) => validateEmail(value.toString()),
+                      ),
+                      const SizedBox(height: 10),
+                      commonButton(context, GlobalConstants().register, () {
+                        if (_formKey.currentState!.validate()) {
+                          isLoading = true;
+                          try {
+                            FirebaseAuth.instance
+                                .createUserWithEmailAndPassword(
+                                    email: _emailController.text,
+                                    password: _passwordController.text)
+                                .then((value) {
+                              FirebaseFirestore.instance
+                                  .collection('regUserInfo')
+                                  .doc(value.user!.uid)
+                                  .set({
+                                "email": value.user!.email,
+                                "name": _nameController.text,
+                                "phone": _mobileController.text,
+                                "photo": value.user!.photoURL,
+                              }
+                                      // {"email": value.user!.email},
+                                      ).then((value) {
+                                isLoading = false;
+                                Get.offAll(const Homepage());
+                              });
+                            });
+                          } catch (e) {
+                            ScaffoldMessenger(child: Text(e.toString()));
                           }
-                                  // {"email": value.user!.email},
-                                  ).then((value) {
-                            isLoading = false;
-                            Get.offAll(const Homepage());
-                          });
-                        });
-                      } catch (e) {
-                        ScaffoldMessenger(child: Text(e.toString()));
-                      }
-                    })
-                  ]),
+                        }
+                      })
+                    ]),
+              ),
             ));
   }
+}
+
+String? validateEmail(String value) {
+  Pattern pattern =
+      r"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]"
+      r"{0,253}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]"
+      r"{0,253}[a-zA-Z0-9])?)*$";
+  RegExp regex = new RegExp(pattern.toString());
+  if (!regex.hasMatch(value) || value == null)
+    return 'Enter a valid email address';
+  else
+    return null;
 }

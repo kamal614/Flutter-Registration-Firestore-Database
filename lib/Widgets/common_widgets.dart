@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 
-TextField commonTextField(String text, IconData icon, bool isPasswordType,
-    TextEditingController controller) {
-  return TextField(
+TextFormField commonTextField(String text, IconData icon, bool isPasswordType,
+    TextEditingController controller, FormFieldValidator validation) {
+  return TextFormField(
+    validator: validation, // What should be done here?
     controller: controller,
     obscureText: isPasswordType,
     enableSuggestions: !isPasswordType,
