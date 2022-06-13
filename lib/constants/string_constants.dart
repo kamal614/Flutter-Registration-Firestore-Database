@@ -10,4 +10,7 @@ class GlobalConstants {
   String homepage = "Homepage";
   String logout = "Logout";
   String mobile = "Enter Your Mobile";
+  String nameLoading = " Name Loading...";
+  String mobileLoading = "Mobile Loading...";
+  String emailLoading = "Email Loading...";
 }
