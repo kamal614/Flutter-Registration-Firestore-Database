@@ -1,10 +1,14 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_registration_app/Screens/homepage.dart';
 import 'package:firebase_registration_app/Widgets/common_widgets.dart';
 import 'package:firebase_registration_app/constants/string_constants.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 
 class RegisterApp extends StatefulWidget {
   const RegisterApp({Key? key}) : super(key: key);
@@ -21,6 +25,31 @@ class _RegisterAppState extends State<RegisterApp> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
+  double screenHeight = 0;
+  double screenWidth = 0;
+  Color primary = const Color(0xffeef444c);
+  String profilePicLink = "";
+
+  void pickUploadProfilePic() async {
+    final image = await ImagePicker().pickImage(
+      source: ImageSource.gallery,
+      maxHeight: 512,
+      maxWidth: 512,
+      imageQuality: 75,
+    );
+
+    Reference ref =
+        FirebaseStorage.instance.ref().child("$_nameController+profilepic.jpg");
+    await ref.putFile(File(image!.path));
+
+    ref.getDownloadURL().then((value) async {
+      setState(() {
+        profilePicLink = value;
+        print(value);
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return isLoading
@@ -30,7 +59,7 @@ class _RegisterAppState extends State<RegisterApp> {
             appBar: AppBar(
               title: Text(GlobalConstants().register),
             ),
-            body: SafeArea(
+            body: SingleChildScrollView(
               child: Form(
                 key: _formKey,
                 child: Padding(
@@ -38,14 +67,35 @@ class _RegisterAppState extends State<RegisterApp> {
                   child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const CircleAvatar(
-                          backgroundColor: Colors.white,
-                          minRadius: 30,
-                          child: Text(
-                            "R",
-                            style: TextStyle(color: Colors.red, fontSize: 20),
+                        GestureDetector(
+                          onTap: () {
+                            pickUploadProfilePic();
+                          },
+                          child: Container(
+                            margin: const EdgeInsets.only(top: 80, bottom: 24),
+                            height: 120,
+                            width: 120,
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(20),
+                              color: primary,
+                            ),
+                            child: Center(
+                              child: profilePicLink == ""
+                                  ? const Icon(
+                                      Icons.person,
+                                      color: Colors.white,
+                                      size: 80,
+                                    )
+                                  : ClipRRect(
+                                      borderRadius: BorderRadius.circular(20),
+                                      child: Image.network(profilePicLink),
+                                    ),
+                            ),
                           ),
                         ),
+                        const SizedBox(height: 10),
+                        Text(GlobalConstants().uploadImage),
                         const SizedBox(height: 15),
                         commonTextField(
                             GlobalConstants().name,
@@ -108,7 +158,7 @@ class _RegisterAppState extends State<RegisterApp> {
                                   "email": value.user!.email,
                                   "name": _nameController.text,
                                   "phone": _mobileController.text,
-                                  "photo": value.user!.photoURL,
+                                  "photo": profilePicLink,
                                 }
                                         // {"email": value.user!.email},
                                         ).then((value) {

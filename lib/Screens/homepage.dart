@@ -40,12 +40,11 @@ class _HomepageState extends State<Homepage> {
                             itemCount: snapshot.data!.docs.length,
                             itemBuilder: (context, index) {
                               return ListTile(
-                                // leading: CircleAvatar(
-                                //   backgroundColor: Colors.purple,
-                                //   child: Text(snapshot
-                                //       .data!.docs[index]['phone'][0]
-                                //       .toString()),
-                                // ),
+                                leading: CircleAvatar(
+                                    backgroundColor: Colors.purple,
+                                    child: Image.network(snapshot
+                                        .data!.docs[index]['photo']
+                                        .toString())),
                                 title: Text(
                                     "Name : ${snapshot.data!.docs[index]['name'].toString()}"),
                                 trailing: Text(

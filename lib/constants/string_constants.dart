@@ -11,4 +11,5 @@ class GlobalConstants {
   String nameLoading = " Name Loading...";
   String mobileLoading = "Mobile Loading...";
   String emailLoading = "Email Loading...";
+  String uploadImage = "Click on the Icon to Upload Image";
 }
