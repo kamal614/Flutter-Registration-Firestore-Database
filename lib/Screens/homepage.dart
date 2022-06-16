@@ -20,19 +20,19 @@ class _HomepageState extends State<Homepage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        backgroundColor: Colors.lightBlue,
-        appBar: AppBar(
-          title: Text(GlobalConstants().homepage),
-        ),
-        body: SafeArea(
-          child: StreamBuilder<QuerySnapshot>(
-              stream: snapshot,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.active) {
-                  if (snapshot.hasData) {
-                    return Expanded(
-                      child: Card(
+    return MaterialApp(
+      home: Scaffold(
+          backgroundColor: Colors.lightBlue,
+          appBar: AppBar(
+            title: Text(GlobalConstants().homepage),
+          ),
+          body: SafeArea(
+            child: StreamBuilder<QuerySnapshot>(
+                stream: snapshot,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.active) {
+                    if (snapshot.hasData) {
+                      return Card(
                         color: Colors.blue,
                         elevation: 6,
                         margin: const EdgeInsets.all(10),
@@ -54,30 +54,30 @@ class _HomepageState extends State<Homepage> {
                                 isThreeLine: true,
                               );
                             }),
-                      ),
+                      );
+                    }
+                    return const Center(child: Text("No Data!!"));
+                  } else {
+                    return const Center(
+                      child: CircularProgressIndicator(),
                     );
                   }
-                  return const Center(child: Text("No Data!!"));
-                } else {
-                  return const Center(
-                    child: CircularProgressIndicator(),
-                  );
-                }
-              }),
-        )
+                }),
+          )
 
-        // Padding(
-        //   padding: const EdgeInsets.all(8.0),
-        //   child: Center(
-        //       child: Column(
-        //     mainAxisAlignment: MainAxisAlignment.center,
-        //     children: [
-        //       commonButton(context, GlobalConstants().logout, () {
-        //         Get.offAll(const RegisterApp());
-        //       })
-        //     ],
-        //   )),
-        // ),
-        );
+          // Padding(
+          //   padding: const EdgeInsets.all(8.0),
+          //   child: Center(
+          //       child: Column(
+          //     mainAxisAlignment: MainAxisAlignment.center,
+          //     children: [
+          //       commonButton(context, GlobalConstants().logout, () {
+          //         Get.offAll(const RegisterApp());
+          //       })
+          //     ],
+          //   )),
+          // ),
+          ),
+    );
   }
 }
