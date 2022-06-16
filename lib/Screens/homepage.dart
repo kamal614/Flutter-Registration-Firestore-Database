@@ -39,15 +39,13 @@ class _HomepageState extends State<Homepage> {
                         child: ListView.builder(
                             itemCount: snapshot.data!.docs.length,
                             itemBuilder: (context, index) {
-                              // Map<String, dynamic> userMap = snapshot
-                              //     .data!.docs[index].data as Map<String, dynamic>;
                               return ListTile(
-                                leading: CircleAvatar(
-                                  backgroundColor: Colors.purple,
-                                  child: Text(snapshot
-                                      .data!.docs[index]['phone'][0]
-                                      .toString()),
-                                ),
+                                // leading: CircleAvatar(
+                                //   backgroundColor: Colors.purple,
+                                //   child: Text(snapshot
+                                //       .data!.docs[index]['phone'][0]
+                                //       .toString()),
+                                // ),
                                 title: Text(
                                     "Name : ${snapshot.data!.docs[index]['name'].toString()}"),
                                 trailing: Text(

@@ -1,9 +1,7 @@
 import 'dart:core';
 
-import 'package:get/get.dart';
-
 class GlobalConstants {
-  String register = "Register".tr;
+  String register = "Register";
   String email = "Enter Your Email";
   String password = "Enter Your Password";
   String name = "Enter Your Name";
